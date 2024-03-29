@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Anime Database</title>
+</head>
+<body>
+    <h1>Anime Database</h1>
+    <form action="/" method="post">
+        <label for="year">Year:</label>
+        <input type="text" id="year" name="year" value="{{ request.form.year if request.form.year else '' }}" required>
+        <label for="season">Season:</label>
+        <select id="season" name="season" required>
+            <option value="spring" {% if request.form.season == "spring" %}selected{% endif %}>Spring</option>
+            <option value="summer" {% if request.form.season == "summer" %}selected{% endif %}>Summer</option>
+            <option value="fall" {% if request.form.season == "fall" %}selected{% endif %}>Fall</option>
+            <option value="winter" {% if request.form.season == "winter" %}selected{% endif %}>Winter</option>
+        </select>
+        <button type="submit">Fetch Anime</button>
+    </form>
+
+    {% if avg_score is not none %}
+    <h3>Average Score for {{ request.form.season.capitalize() if request.form.season else 'Selected Season' }} {{ request.form.year if request.form.year else 'Year' }}: {{ avg_score|round(2) }}</h3>
+    {% endif %}
+
+    {% if anime_list %}
+    <h2>Fetched Anime</h2>
+    <table border="1">
+        <tr>
+            <th>Title</th>
+            <th>Score</th>
+            <th>Year</th>
+            <th>Season</th>
+        </tr>
+        {% for anime in anime_list %}
+        <tr>
+            <td>{{ anime['title'] }}</td>
+            <td>{{ anime['score'] }}</td>
+            <td>{{ anime['year'] }}</td>
+            <td>{{ anime['season'].capitalize() }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="4">No anime data found.</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+
+    {% for message in get_flashed_messages() %}
+    <div>{{ message }}</div>
+    {% endfor %}
+</body>
+</html>
