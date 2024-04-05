@@ -1,7 +1,11 @@
 import os
 import requests
 import pika
-from ..models.models import Anime
+import logging
+from .models import Anime  # Adjust the import path according to your project structure
+
+# Setup logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def get_seasonal_anime(year, season):
     """
@@ -10,7 +14,7 @@ def get_seasonal_anime(year, season):
     url = f"https://api.jikan.moe/v4/seasons/{year}/{season}"
     try:
         response = requests.get(url)
-        response.raise_for_status()  # Raises HTTPError for bad responses
+        response.raise_for_status()
 
         anime_data = response.json()['data']
         for anime in anime_data:
@@ -18,10 +22,9 @@ def get_seasonal_anime(year, season):
             score = anime.get('score', 'N/A')
             inserted = Anime.insert_anime(title, score, year, season)
             if inserted:
-                # Publish an event only if the anime is successfully inserted
                 publish_anime_event(title)
     except requests.RequestException as e:
-        print(f"Request failed: {e}")
+        logging.error(f"Request failed: {e}")
         return False
     return True
 
@@ -29,16 +32,24 @@ def publish_anime_event(anime_title):
     """
     Publishes an event to a RabbitMQ queue when a new anime is added.
     """
+    cloudamqp_url = os.getenv('CLOUDAMQP_URL')
+    if not cloudamqp_url:
+        logging.error('CLOUDAMQP_URL is not set.')
+        return
+
     try:
-        connection = pika.BlockingConnection(pika.ConnectionParameters(os.getenv('RABBITMQ_HOST', 'localhost')))
+        params = pika.URLParameters(cloudamqp_url)
+        connection = pika.BlockingConnection(params)
         channel = connection.channel()
         channel.queue_declare(queue='anime_updates')
         channel.basic_publish(exchange='', routing_key='anime_updates', body=f'New anime added: {anime_title}')
-        connection.close()
     except pika.exceptions.AMQPConnectionError as e:
-        print(f"Failed to connect to RabbitMQ: {e}")
+        logging.error(f"Failed to connect to RabbitMQ: {e}")
     except Exception as e:
-        print(f"An error occurred while publishing to RabbitMQ: {e}")
+        logging.error(f"An error occurred while publishing to RabbitMQ: {e}")
+    finally:
+        if connection:
+            connection.close()
 
 def get_anime_by_year_season(year, season):
     """
@@ -50,5 +61,5 @@ def get_anime_by_year_season(year, season):
         avg_score = sum(scores) / len(scores) if scores else 0
         return anime_list, avg_score
     except Exception as e:
-        print(f"Error fetching anime data: {e}")
+        logging.error(f"Error fetching anime data: {e}")
         return [], 0
