@@ -12,7 +12,7 @@ def callback(ch, method, properties, body):
 
 def main():
     # Use CloudAMQP URL from your environment variables, if available
-    cloudamqp_url = os.getenv('CLOUDAMQP_URL', 'your_default_fallback_connection_string')
+    cloudamqp_url = os.getenv('CLOUDAMQP_URL')
     params = pika.URLParameters(cloudamqp_url)
 
     connection = None
