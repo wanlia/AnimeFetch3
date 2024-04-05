@@ -2,7 +2,7 @@ import os
 import requests
 import pika
 import logging
-from .models.models import Anime  # Adjust the import path based on your project structure
+from ..models.models import Anime
 
 # Setup basic logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
