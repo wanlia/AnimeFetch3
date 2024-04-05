@@ -2,7 +2,7 @@ import os
 import pika
 import logging
 
-# Setup logging
+# Setup basic logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def callback(ch, method, properties, body):
@@ -14,6 +14,7 @@ def main():
         logging.error('CLOUDAMQP_URL is not set.')
         return
 
+    logging.info(f"Attempting to connect to RabbitMQ with URL: {cloudamqp_url}")
     try:
         params = pika.URLParameters(cloudamqp_url)
         connection = pika.BlockingConnection(params)
