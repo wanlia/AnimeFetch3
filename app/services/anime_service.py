@@ -35,6 +35,7 @@ def publish_anime_event(anime_title):
     """
     cloudamqp_url = os.getenv('CLOUDAMQP_URL')
     logging.info(f"Using CLOUDAMQP_URL: {cloudamqp_url}")
+    connection = None
     try:
         params = pika.URLParameters(cloudamqp_url)
         connection = pika.BlockingConnection(params)
