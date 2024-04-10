@@ -16,7 +16,7 @@
             <option value="fall" {% if request.form.season == "fall" %}selected{% endif %}>Fall</option>
             <option value="winter" {% if request.form.season == "winter" %}selected{% endif %}>Winter</option>
         </select>
-        <button type="submit">Fetch Anime</button>
+        <button type="submit">Fetch</button>
     </form>
 
     {% if avg_score is not none %}

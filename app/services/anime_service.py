@@ -14,7 +14,7 @@ def get_seasonal_anime(year, season):
     url = f"https://api.jikan.moe/v4/seasons/{year}/{season}"
     try:
         response = requests.get(url)
-        response.raise_for_status()  # Raises HTTPError for bad responses
+        response.raise_for_status()  
 
         anime_data = response.json()['data']
         for anime in anime_data:

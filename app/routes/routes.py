@@ -2,7 +2,6 @@ from flask import Blueprint, render_template, request, flash
 from ..services.anime_service import get_seasonal_anime, get_anime_by_year_season
 
 
-# Create a Blueprint for your app routes
 bp = Blueprint('main', __name__, template_folder='templates')
 
 @bp.route('/', methods=['GET', 'POST'])
@@ -23,5 +22,4 @@ def index():
     return render_template('index.html', anime_list=anime_list, avg_score=avg_score)
 
 def configure_routes(app):
-    # Register the Blueprint with the Flask application
     app.register_blueprint(bp)

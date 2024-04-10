@@ -1,7 +1,6 @@
 from flask import Flask
-# Ensure you import os for environment variable access
 import os
-from .models.models import db  # Adjust based on your project structure
+from .models.models import db  
 from config import DevelopmentConfig, ProductionConfig, TestingConfig
 from .routes.routes import configure_routes
 
@@ -22,10 +21,8 @@ def create_app():
     # Database URI configuration
     database_url = os.getenv('DATABASE_URL')
     if database_url:
-        # Ensure the URI starts with "postgresql://" (Heroku sometimes provides "postgres://")
         database_url = database_url.replace("postgres://", "postgresql://", 1)
     else:
-        # Fallback to a default SQLite database if DATABASE_URL is not set
         database_url = 'sqlite:///' + os.path.join(os.path.abspath(os.path.dirname(__file__)), 'app.db')
     
     app.config['SQLALCHEMY_DATABASE_URI'] = database_url
@@ -37,7 +34,5 @@ def create_app():
 
     configure_routes(app)
 
-    # Further configuration, such as registering blueprints
-    # ...
 
     return app
